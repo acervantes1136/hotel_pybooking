@@ -1,0 +1,9 @@
+Age: 21
+Nights: 4
+First Name: Amelia
+Last Name: Cervantes
+Email: email@hotmail.com
+Phone: 1234567890
+Total Guests: 3
+Understands Cancellation Policy: Yes
+----------------------------------------
