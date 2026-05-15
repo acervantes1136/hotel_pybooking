@@ -146,6 +146,13 @@ with tab1:
         if st.session_state.get("preview_ready", False):
             data = st.session_state.preview_data
             st.success("Booking summary preview:")
+            warning_html = ""
+            if data['understands_policy'] == "No":
+                warning_html = (
+                    "<div style='color:#b00020; font-weight:bold; margin-top:0.5em;'>"
+                    "IMPORTANT: You must cancel 72 hours before check-in or you will be charged for the first night."
+                    "</div>"
+                )
             st.markdown(
                 f"""
                 <div style='background:#f0f6ff; border-radius:8px; padding:1em; border:1px solid #b3d1f7;'>
@@ -155,7 +162,8 @@ with tab1:
                 <b>Email:</b> {data['email']}<br>
                 <b>Phone:</b> {data['phone']}<br>
                 <b>Total Guests:</b> {data['guests']}<br>
-                <b>Understands Policy:</b> {data['understands_policy']}
+                <b>Understands Policy:</b> {data['understands_policy']}<br>
+                {warning_html}
                 </div>
                 <br>
                 """,
@@ -163,25 +171,32 @@ with tab1:
             )
             submit_booking = st.form_submit_button("Submit Booking")
             if submit_booking:
-                # Save booking to file
-                booking_log = (
-                    f"Age: {data['age']}\n"
-                    f"Nights: {data['nights']}\n"
-                    f"First Name: {data['first_name']}\n"
-                    f"Last Name: {data['last_name']}\n"
-                    f"Email: {data['email']}\n"
-                    f"Phone: {data['phone']}\n"
-                    f"Total Guests: {data['guests']}\n"
-                    f"Understands Cancellation Policy: {data['understands_policy']}\n"
-                    f"{'-'*40}\n"
-                )
-                try:
-                    with open("hotel_bookings.txt", "a") as file:
-                        file.write(booking_log)
-                    st.success("Booking submitted and saved!")
-                    st.session_state.preview_ready = False
-                except Exception as e:
-                    st.error(f"ERROR: Could not save booking to file. {e}")
+                st.session_state.submit_booking_triggered = True
+
+# --- Save booking after form, if triggered ---
+if st.session_state.get("submit_booking_triggered", False):
+    data = st.session_state.get("preview_data", None)
+    if data:
+        booking_log = (
+            f"Age: {data['age']}\n"
+            f"Nights: {data['nights']}\n"
+            f"First Name: {data['first_name']}\n"
+            f"Last Name: {data['last_name']}\n"
+            f"Email: {data['email']}\n"
+            f"Phone: {data['phone']}\n"
+            f"Total Guests: {data['guests']}\n"
+            f"Understands Cancellation Policy: {data['understands_policy']}\n"
+            f"{'-'*40}\n"
+        )
+        try:
+            with open("hotel_bookings.txt", "a") as file:
+                file.write(booking_log)
+            st.success("Booking submitted and saved!")
+            st.session_state.preview_ready = False
+            st.session_state.submit_booking_triggered = False
+        except Exception as e:
+            st.error(f"ERROR: Could not save booking to file. {e}")
+            st.session_state.submit_booking_triggered = False
 
 with tab2:
     st.header("All Bookings")
