@@ -1,8 +1,5 @@
-from pdb import main
-from tkinter import Image
-
-import streamlit_app as st
-from PIL import Image, ImageDraw  # type: ignore
+import streamlit as st # type: ignore
+from PIL import Image, ImageDraw # type: ignore
 import os
 
 # --- App Config ---
@@ -127,6 +124,3 @@ with tab2:
         "<div style='height:200px; display:flex; align-items:center; justify-content:center; color:#205080; font-size:1.2em;'>[Bookings list coming soon]</div>",
         unsafe_allow_html=True,
     )
-
-if __name__ == "__main__":
-    main()
